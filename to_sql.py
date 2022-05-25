@@ -2,26 +2,26 @@ import json
 import sqlite3
 
 
-con = sqlite3.connect('bike_matrix.db')
+con = sqlite3.connect('data/bike_matrix.db')
 cur = con.cursor()
 
-with open('stations.json', 'r') as f:
+with open('data/stations.json', 'r') as f:
     stations = json.load(f)
 
-with open('resp.json', 'r') as f:
+with open('data/resp.json', 'r') as f:
     table = json.load(f)
 
 # Duration matrix
 
 ## Create table with columns for every station
 ids = ['id']
-for st in stations["data"]["stations"]:
+for st in stations:
     ids.append(st['station_id'])
 
 cur.execute(f'''CREATE TABLE durations {str(tuple(ids))}''', )
 
 for i, row in enumerate(table["durations"]):
-    first = stations['data']['stations'][i]['station_id']
+    first = stations[i]['station_id']
     row = [first] + row
     print(f"INSERT INTO durations VALUES {str(tuple(row))}")
     cur.execute(f"INSERT INTO durations VALUES {str(tuple(row))}")
@@ -30,7 +30,7 @@ con.commit()
 
 # Station info
 station_table = []
-for st in stations["data"]["stations"]:
+for st in stations:
     #st['name']
     # normal
     # '''E-bike - ''' electric

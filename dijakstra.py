@@ -116,10 +116,10 @@ if __name__ == '__main__':
     METRO = False
     # For metro to work we need to edit original graph - add transit times from bikes to platforms. Just combining it together wont work as there will be key conflict
 
-    with open('stations.json', 'r') as f:
+    with open('data/stations.json', 'r') as f:
         stations = json.load(f)['data']['stations']
 
-    with open('resp.json', 'r') as f:
+    with open('data/resp.json', 'r') as f:
         durations = json.load(f)['durations']
 
     # graph = {"node1": {"node2": weight, ...}, ...}
@@ -132,11 +132,11 @@ if __name__ == '__main__':
             if durations[i][n] < 1100:
                 graph[id][id2] = durations[i][n]
 
-    with open('station_names.json', 'r') as f:
+    with open('data/station_names.json', 'r') as f:
         names = json.load(f)
 
     if METRO:
-        with open('metro.json', 'r', encoding='UTF-8') as f:
+        with open('data/metro.json', 'r', encoding='UTF-8') as f:
             metro = json.load(f)
 
         graph = {**metro, **graph}

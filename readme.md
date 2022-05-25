@@ -1,4 +1,10 @@
 # Vetu-router
+## Creating data files
+1. `download.py`
+2. `osrm_matrix.py` with running osrm server
+3. `to_sql.py`
+4. `to_name_keys.py` for webapp
+
 
 ## Data sources
 

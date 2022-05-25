@@ -15,13 +15,17 @@ systems = [
 # Max distance (in km) between two stations (optimization for routing)
 KM_THRESHOLD = 10
 
-if not os.path.exists('stations.json'):
-    stations = requests.get('https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_vp/pl/station_information.json').json()
-
-    with open('stations.json', 'w') as f:
+stations = []
+if not os.path.exists('data/stations.json'):
+    for system in systems:
+        print(f'Downloading {system}...')
+        _system = requests.get(f'https://gbfs.nextbike.net/maps/gbfs/v2/{system}/pl/station_information.json').json()
+        stations += _system['data']['stations']
+    
+    with open('data/stations.json', 'w') as f:
         json.dump(stations, f, indent=2)
 else:
-    with open('stations.json', 'r') as f:
+    with open('data/stations.json', 'r') as f:
         stations = json.load(f)
 
 
@@ -52,14 +56,14 @@ def distance(lat1, lon1, lat2, lon2):
 
 latlon = {}
 optimized_matrix = []
-for station in stations['data']['stations']:
+for station in stations:
 
     id = station['station_id']
     lat = station['lat']
     lon = station['lon']
     latlon[id] = (lat, lon)
     close = []
-    for station2 in stations['data']['stations']:
+    for station2 in stations:
         id2 = station2['station_id']
         lat2 = station2['lat']
         lon2 = station2['lon']
@@ -70,8 +74,8 @@ for station in stations['data']['stations']:
 
     optimized_matrix.append({'id': id, 'close': close})
 
-with open('matrix.json', 'w') as f:
+with open('data/matrix.json', 'w') as f:
     json.dump(optimized_matrix, f, indent=2)
 
-with open('gps.json', 'w') as f:
+with open('data/gps.json', 'w') as f:
     json.dump(latlon, f, indent=2)
