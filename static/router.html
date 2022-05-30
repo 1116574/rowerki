@@ -117,10 +117,10 @@ function draw_markers(start_id=0, finish_id=0){
                     .then(data => {
                         draw_route_markers(data['route'])
                         var ul = document.getElementById("list");
-                        console.log(data['names'])
-                        for(const index in data['names']){
+                        console.log(data['step_by_step'])
+                        for(const index in data['step_by_step']){
                             var li = document.createElement("li");
-                            li.appendChild(document.createTextNode(data['names'][index]));
+                            li.appendChild(document.createTextNode(data['step_by_step'][index]));
                             ul.appendChild(li);
                         }  
                     })

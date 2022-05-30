@@ -144,18 +144,20 @@ def dijakstra(id1, id2):
         step_by_step = []
         station_names = get_station_names()
         for i, id in enumerate(route):
+            # TODO: Fix this try-catch mess
             try:
                 time += graph[id][route[i+1]]
                 durations.append(graph[id][route[i+1]]/60)
                 names.append(station_names[id]['name'])
-                step_by_step.append(id)
-                step_by_step.append(graph[id][route[i+1]])
+                step_by_step.append(station_names[id]['name'])
+                step_by_step.append(str(graph[id][route[i+1]]/60) + ' min')
             except IndexError:
                 names.append(station_names[id]['name'])
-                step_by_step.append(id)
+                step_by_step.append(station_names[id]['name'])
         return {'time': time/60, 'route': route, 'durations': durations, 'names': names, 'step_by_step': step_by_step}
     else:
-        return {'error': 400, 'TF1': (id1 in locations), 'TF2': (id2 in locations), 'loc': locations}
+        # return {'error': 400, 'TF1': (id1 in locations), 'TF2': (id2 in locations), 'loc': locations}
+        return Response('{"error": "Bike stations not found"}', status=404, mimetype='application/json')
 
 @app.route("/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
 def dummy(lat1, lon1, lat2, lon2):
