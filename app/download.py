@@ -83,3 +83,8 @@ with open('data/matrix.json', 'w') as f:
 
 with open('data/gps.json', 'w') as f:
     json.dump(latlon, f, indent=2)
+
+with open('static/gps.js', 'w') as f:
+    file = json.dumps(latlon, indent=2)
+    file = 'const gps = ' + file
+    f.write(file)
