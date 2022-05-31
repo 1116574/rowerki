@@ -14,6 +14,8 @@ There is also a very simplistic web interface at `/static/router.html` and `/sta
 3. `to_sql.py` to create database
 4. OPTIONAL `to_name_keys.py` for webapp use, not required by API
 
+`webserver.py` is the entrypoint that contains the app.
+
 
 ## Data sources
 
