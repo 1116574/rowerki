@@ -1,3 +1,4 @@
-/old/
-/data/
-/tilescache/
+old/
+data/
+tilescache/
+*.pyc
