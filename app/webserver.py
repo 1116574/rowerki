@@ -86,20 +86,9 @@ def hello_world():
 def get_stations(id):
     db = get_db()
     c = db.cursor()
-    # fuck it
-    # For normal cyclist (~18 min)
-    # query = f'SELECT id, "{id}" FROM durations WHERE "{id}" < 1100'
-    # c.execute(query)
-    # result = c.fetchall()
-    # normal = []
-    # for entry in result:
-    #     response = {}
-    #     response['id'] = entry[0]
-    #     response['duration'] = entry[1]
-    #     normal.append(response)
 
     # EXTREEEEME CYCLING (hard 20 min)
-    query = f'SELECT id, "{id}" FROM durations WHERE "{id}" < 1200'
+    query = f'SELECT id, "{id}" FROM durations WHERE "{id}" < 1200'  # its sanitazied by flask itself
     c.execute(query)
     result = c.fetchall()
     extreme = []
@@ -138,23 +127,47 @@ def dijakstra(id1, id2):
         route = dijkstra(graph, str(id1), str(id2))
         if route is None:
             return Response('{"error": "No route found"}', status=404, mimetype='application/json')
-        names = []
+
         time = 0
-        durations = []
-        step_by_step = []
+        route_full = []
+        route_simplified = []
         station_names = get_station_names()
-        for i, id in enumerate(route):
-            # TODO: Fix this try-catch mess
-            try:
-                time += graph[id][route[i+1]]
-                durations.append(graph[id][route[i+1]]/60)
-                names.append(station_names[id]['name'])
-                step_by_step.append(station_names[id]['name'])
-                step_by_step.append(str(graph[id][route[i+1]]/60) + ' min')
-            except IndexError:
-                names.append(station_names[id]['name'])
-                step_by_step.append(station_names[id]['name'])
-        return {'time': time/60, 'route': route, 'durations': durations, 'names': names, 'step_by_step': step_by_step}
+
+        for idx in range(0, len(route)-1):
+            current = route[idx]
+            next = route[idx+1]
+            t = graph[current][next]
+            # simplified
+            route_simplified.append(current)
+            route_simplified.append(t)
+
+            # full
+            route_full += [{
+                'type': 'station',
+                'id': current,
+                'name': station_names[current]['name'],
+                'short_name': station_names[current]['short_name'],
+                'lat': station_names[current]['lat'],
+                'lon': station_names[current]['lon'],
+            },
+            {
+                'type': 'journey',
+                'duration': t,
+                'distance': 0,
+            }]
+            time += t
+        # last stop is skipped so we need to add it manually
+        route_simplified.append(route[-1])
+        route_full.append({
+                'type': 'station',
+                'id': current,
+                'name': station_names[current]['name'],
+                'short_name': station_names[current]['short_name'],
+                'lat': station_names[current]['lat'],
+                'lon': station_names[current]['lon'],
+            })
+
+        return {'total_time': time, 'route_full': route_full, 'route_simplified': route_simplified}
     else:
         # return {'error': 400, 'TF1': (id1 in locations), 'TF2': (id2 in locations), 'loc': locations}
         return Response('{"error": "Bike stations not found"}', status=404, mimetype='application/json')
@@ -164,6 +177,6 @@ def dummy(lat1, lon1, lat2, lon2):
     return None
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=8080)
+    app.run(host='localhost', port=8080, debug=True)
 
 
