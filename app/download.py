@@ -24,6 +24,10 @@ if not os.path.exists('data/stations.json'):
     
     with open('data/stations.json', 'w') as f:
         json.dump(stations, f, indent=2)
+    with open('static/stations.js', 'w') as f:
+        file = json.dumps(stations, indent=2)
+        file = 'const stations = ' + file
+        f.write(file)
 else:
     with open('data/stations.json', 'r') as f:
         stations = json.load(f)

@@ -12,4 +12,10 @@ for st in stations:
 with open('data/station_names.json', 'w') as f:
     json.dump(key_names, f)
 
+# For front end
+with open('static/station_names.js', 'w') as f:
+    file = json.dumps(key_names)
+    file = 'const station_names = ' + file
+    f.write(file)
+
 
