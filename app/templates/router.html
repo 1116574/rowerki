@@ -10,11 +10,24 @@
         <div id="controls">
             <h1>Vetu-Router</h1>
             <h2>Do 20 minut za darmo!</h2>
+            <div class='station'>
+                <h3>Początek</h3>
+            </div>
+            <div class='journey'>
+                {{ walking[0] }}
+            </div>
+            
             {% for event in route %}
-                {% if event.type == 'journey '%}
-                    <p>{{ event.type }} {{ event.duration }} {{ event.distance }}</p>
+                {% if event.type == 'journey' %}
+                    <div class='journey'>
+                        {{ event.duration // 60 }} minut {{ event.duration % 60 // 1}} sekund
+                    </div>
                 {% else %}
-                    <p>{{ event.type }} {{ event.id }} {{ event.shortname }} {{ event.name }}</p>
+                    <div class='station'>
+                        <img src='{{ url_for('static', filename='bike.svg') }}' alt='rower'> <!-- TODO: translations -->
+                        <h3>{{ event.name }}</h3>
+                        <h5>{{ event.shortname }}</h5>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>

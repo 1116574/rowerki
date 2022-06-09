@@ -1,3 +1,4 @@
+from fileinput import close
 import json
 
 from flask import Flask, jsonify, render_template
@@ -163,11 +164,11 @@ def dijakstra(id1, id2):
         route_simplified.append(route[-1])
         route_full.append({
                 'type': 'station',
-                'id': current,
-                'name': station_names[current]['name'],
-                'short_name': station_names[current]['short_name'],
-                'lat': station_names[current]['lat'],
-                'lon': station_names[current]['lon'],
+                'id': next,
+                'name': station_names[next]['name'],
+                'short_name': station_names[next]['short_name'],
+                'lat': station_names[next]['lat'],
+                'lon': station_names[next]['lon'],
             })
 
         return {'total_time': time, 'route_full': route_full, 'route_simplified': route_simplified}
@@ -187,10 +188,18 @@ def complete_route(lat1, lon1, lat2, lon2):
 
 ### Views
 
-@app.route("/route/<int:id1>/<int:id2>")
-def route_view(id1, id2):
+@app.route("/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
+def route_view(lat1, lon1, lat2, lon2):
+    closest1 = closest(lat1, lon1)[0]
+    id1 = closest1[0]
+    dist1 = closest1[1]
+
+    closest2 = closest(lat2, lon2)[0]
+    id2 = closest2[0]
+    dist2 = closest2[1]
+
     route = dijakstra(id1, id2)
-    return render_template('router.html', route=route['route_full'])
+    return render_template('router.html', route=route['route_full'], walking=[dist1, dist2])
 
 if __name__ == "__main__":
     app.run(host='localhost', port=80, debug=True)
