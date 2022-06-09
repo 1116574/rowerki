@@ -1,6 +1,7 @@
 old/
 data/
 tilescache/
+__pycache__/
 *.pyc
 app/static/stations.js
 app/static/station_names.js

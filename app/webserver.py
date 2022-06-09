@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, render_template
+from flask import Flask, jsonify
 import sqlite3
 from flask import g
 from flask import Response
@@ -9,14 +9,7 @@ from dijkstra import dijkstra
 
 app = Flask(__name__)
 
-DATABASE = 'data/bike_matrix.db'
-
-def get_access_token():
-    token = getattr(g, '_token', None)
-    if token is None:
-        with open('.mapbox_token', 'r') as f:
-            token = g._token = f.read()
-    return token
+DATABASE = 'app/data/bike_matrix.db'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -59,7 +52,6 @@ def get_graph():
         g._graph = graph
     return graph
 
-
 def distance(lat1, lon1, lat2, lon2):
     """Calculate distance beetwen 2 points given in lat-lon"""
     # src: https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude
@@ -84,6 +76,21 @@ def distance(lat1, lon1, lat2, lon2):
 
     return distance
 
+def closest(lat1, lon1):
+    print(lat1, lon1)
+    gps = get_locations()
+    all_distances = []
+    for stat in gps:
+        lat2 = gps[stat][0]
+        lon2 = gps[stat][1]
+        dist = distance(lat1, lon1, lat2, lon2)
+        all_distances.append((stat, dist))
+
+    all_distances.sort(key=lambda tup: tup[1])
+    return all_distances
+
+
+### Endpoints
 
 @app.route("/test")
 def hello_world():
@@ -107,20 +114,10 @@ def get_stations(id):
     
     return {'results': extreme}
 
-
 @app.route("/closest/<float:lat1>,<float:lon1>")
-def closest(lat1, lon1):
-    print(lat1, lon1)
-    gps = get_locations()
-    all_distances = []
-    for stat in gps:
-        lat2 = gps[stat][0]
-        lon2 = gps[stat][1]
-        dist = distance(lat1, lon1, lat2, lon2)
-        all_distances.append((stat, dist))
-
-    all_distances.sort(key=lambda tup: tup[1])
-    return {'closest': all_distances}
+def closest_view(lat1, lon1):
+    all_distances = closest(lat1, lon1)
+    return jsonify(all_distances)
 
 
 @app.route("/dijkstra/<int:id1>/<int:id2>")
@@ -180,13 +177,14 @@ def dijakstra(id1, id2):
         return Response('{"error": "Bike stations not found"}', status=404, mimetype='application/json')
 
 @app.route("/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
-def dummy(lat1, lon1, lat2, lon2):
-    return None
+def complete_route(lat1, lon1, lat2, lon2):
+    closest_1 = closest(lat1, lon1)[0][0]
+    closest_2 = closest(lat2, lon2)[0][0]
 
-@app.route("/")
-def router():
-    token = get_access_token()
-    return render_template('router.html', mapbox_access_token=token)
+    route = dijakstra(closest_1, closest_2)
+
+    return route
+
 
 if __name__ == "__main__":
     app.run(host='localhost', port=80, debug=True)
