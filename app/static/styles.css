@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    height: 95vh;
+    display: grid;
+    font-size: larg;
+
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px; 
+}
+#map {
+    height: 100%;
+    grid-area: 1 / 2 / 2 / 4;
+    border-radius: 2em;
+    background-color: #f8b5ff;
+}
+#controls {
+    grid-area: 1 / 1 / 2 / 2;
+}
+
+#list {
+    list-style: inside none;
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-template-rows: 24px;
+}
+
+
+div.journey {
+    font-weight: bold;
+    font-size: small;
+    color: #7B61FF
+}
+
+/* li.station {
+    list-style: url('thru-circle.svg');
+}
+
+li.journey {
+    list-style: url('thru-line.svg');
+} */

@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import sqlite3
 from flask import g
 from flask import Response
@@ -119,7 +119,6 @@ def closest_view(lat1, lon1):
     all_distances = closest(lat1, lon1)
     return jsonify(all_distances)
 
-
 @app.route("/api/dijkstra/<int:id1>/<int:id2>")
 def dijakstra(id1, id2):
     from dijkstra import dijkstra
@@ -185,6 +184,13 @@ def complete_route(lat1, lon1, lat2, lon2):
 
     return route
 
+
+### Views
+
+@app.route("/route/<int:id1>/<int:id2>")
+def route_view(id1, id2):
+    route = dijakstra(id1, id2)
+    return render_template('router.html', route=route['route_full'])
 
 if __name__ == "__main__":
     app.run(host='localhost', port=80, debug=True)

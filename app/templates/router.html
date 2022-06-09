@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <title>Router</title>
+    </head>
+    <body>
+        <div id="controls">
+            <h1>Vetu-Router</h1>
+            <h2>Do 20 minut za darmo!</h2>
+            {% for event in route %}
+                {% if event.type == 'journey '%}
+                    <p>{{ event.type }} {{ event.duration }} {{ event.distance }}</p>
+                {% else %}
+                    <p>{{ event.type }} {{ event.id }} {{ event.shortname }} {{ event.name }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div id="map"></div>
+    </body>
+</html>
