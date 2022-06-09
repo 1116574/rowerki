@@ -2,10 +2,10 @@ import json
 import requests
 # OSRM lib doesnt seem to work on windows
 
-with open('data/stations.json', 'r') as f:
+with open('app/data/stations.json', 'r') as f:
     stations = json.load(f)
 
-with open('data/gps.json', 'r') as f:
+with open('app/data/gps.json', 'r') as f:
     gps = json.load(f)
 
 pairs = []
@@ -30,5 +30,5 @@ for pair in pairs:
         print('Error', response['code'])
 
     if successes % 100 == 0:
-        with open('data/shapes.json', 'w') as f:
+        with open('app/data/shapes.json', 'w') as f:
             json.dump(mem, f, indent=2)

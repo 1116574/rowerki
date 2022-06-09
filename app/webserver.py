@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask
+from flask import Flask, render_template
 import sqlite3
 from flask import g
 from flask import Response
@@ -10,6 +10,13 @@ from dijkstra import dijkstra
 app = Flask(__name__)
 
 DATABASE = 'data/bike_matrix.db'
+
+def get_access_token():
+    token = getattr(g, '_token', None)
+    if token is None:
+        with open('.mapbox_token', 'r') as f:
+            token = g._token = f.read()
+    return token
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -26,14 +33,14 @@ def close_connection(exception):
 def get_locations():
     gps = getattr(g, '_gps', None)
     if gps is None:
-        with open('data/gps.json', 'r') as f:
+        with open('app/data/gps.json', 'r') as f:
             gps = g._gps = json.load(f)
     return gps
 
 def get_station_names():
     station_names = getattr(g, '_station_names', None)
     if station_names is None:
-        with open('data/station_names.json', 'r') as f:
+        with open('app/data/station_names.json', 'r') as f:
             station_names = g._station_names = json.load(f)
     return station_names
 
@@ -41,10 +48,10 @@ def get_graph():
     graph = getattr(g, '_graph', None)
     if graph is None:
         from dijkstra import create_graph
-        with open('data/stations.json', 'r') as f:
+        with open('app/data/stations.json', 'r') as f:
             stations = json.load(f)
 
-        with open('data/resp.json', 'r') as f:
+        with open('app/data/resp.json', 'r') as f:
             durations = json.load(f)['durations']
 
         # graph = {"node1": {"node2": weight, ...}, ...}
@@ -78,7 +85,7 @@ def distance(lat1, lon1, lat2, lon2):
     return distance
 
 
-@app.route("/")
+@app.route("/test")
 def hello_world():
     return "<p>Hello, World!</p>"
 
@@ -176,7 +183,12 @@ def dijakstra(id1, id2):
 def dummy(lat1, lon1, lat2, lon2):
     return None
 
+@app.route("/")
+def router():
+    token = get_access_token()
+    return render_template('router.html', mapbox_access_token=token)
+
 if __name__ == "__main__":
-    app.run(host='localhost', port=8080, debug=True)
+    app.run(host='localhost', port=80, debug=True)
 
 

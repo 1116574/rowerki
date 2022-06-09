@@ -38,9 +38,9 @@ crossorigin=""/>
 </div>
 <div id="map"></div>
 
-<script src="stations.js"></script>
-<script src="station_names.js"></script>
-<script src="gps.js"></script>
+<script src="{{ url_for('static', filename='stations.js') }}"></script>
+<script src="{{ url_for('static', filename='station_names.js') }}"></script>
+<script src="{{ url_for('static', filename='gps.js') }}"></script>
 
 <script>
     var map = L.map('map').setView([52.22, 21.00], 13);
@@ -50,18 +50,18 @@ crossorigin=""/>
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
-    accessToken: 'pk.eyJ1IjoicGF3ZWwxMTE2NTc0IiwiYSI6ImNsM2Fydmh5dTA0ZHczYnA0c3lseWlyZmEifQ.gKQTMlWndPolQFJM1lvgUQ'
+    accessToken: '{{ mapbox_access_token }}'
 }).addTo(map);
 
 var startIcon = L.icon({
-    iconUrl: 'green_flag.png',
+    iconUrl: "{{ url_for('static', filename='green_flag.png') }}",
     iconSize: [25, 25],
     iconAnchor: [12, 25],
     popupAnchor: [12, -25],
 });
 
 var endIcon = L.icon({
-    iconUrl: 'finish_flag.png',
+    iconUrl: "{{ url_for('static', filename='finish_flag.png') }}",
     iconSize: [25, 25],
     iconAnchor: [12, 25],
     popupAnchor: [12, -25],
@@ -114,7 +114,7 @@ function draw_markers(start_id=0, finish_id=0){
                 console.log(station['station_id'])
 
                 draw_markers(start_id=starting_station, finish_id=station['station_id']);
-                fetch('http://' + url + '/dijkstra/' + starting_station + '/' + station['station_id'])
+                fetch(url + '/dijkstra/' + starting_station + '/' + station['station_id'])
                     .then(response => response.json())
                     .then(data => {
                         draw_route_markers(data['route'])

@@ -16,21 +16,24 @@ systems = [
 KM_THRESHOLD = 10
 
 stations = []
-if not os.path.exists('data/stations.json'):
+if not os.path.exists('app/data/stations.json'):
     for system in systems:
         print(f'Downloading {system}...')
         _system = requests.get(f'https://gbfs.nextbike.net/maps/gbfs/v2/{system}/pl/station_information.json').json()
         stations += _system['data']['stations']
     
-    with open('data/stations.json', 'w') as f:
+    with open('app/data/stations.json', 'w') as f:
         json.dump(stations, f, indent=2)
-    with open('static/stations.js', 'w') as f:
-        file = json.dumps(stations, indent=2)
-        file = 'const stations = ' + file
-        f.write(file)
+
 else:
-    with open('data/stations.json', 'r') as f:
+    with open('app/data/stations.json', 'r') as f:
         stations = json.load(f)
+
+with open('app/static/stations.js', 'w') as f:
+    file = json.dumps(stations, indent=2)
+    file = 'const stations = ' + file
+    f.write(file)
+
 
 
 def distance(lat1, lon1, lat2, lon2):
@@ -78,13 +81,13 @@ for station in stations:
 
     optimized_matrix.append({'id': id, 'close': close})
 
-with open('data/matrix.json', 'w') as f:
+with open('app/data/matrix.json', 'w') as f:
     json.dump(optimized_matrix, f, indent=2)
 
-with open('data/gps.json', 'w') as f:
+with open('app/data/gps.json', 'w') as f:
     json.dump(latlon, f, indent=2)
 
-with open('static/gps.js', 'w') as f:
+with open('app/static/gps.js', 'w') as f:
     file = json.dumps(latlon, indent=2)
     file = 'const gps = ' + file
     f.write(file)
