@@ -96,7 +96,7 @@ def closest(lat1, lon1):
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/<int:id>")
+@app.route("/api/<int:id>")
 def get_stations(id):
     db = get_db()
     c = db.cursor()
@@ -114,13 +114,13 @@ def get_stations(id):
     
     return {'results': extreme}
 
-@app.route("/closest/<float:lat1>,<float:lon1>")
+@app.route("/api/closest/<float:lat1>,<float:lon1>")
 def closest_view(lat1, lon1):
     all_distances = closest(lat1, lon1)
     return jsonify(all_distances)
 
 
-@app.route("/dijkstra/<int:id1>/<int:id2>")
+@app.route("/api/dijkstra/<int:id1>/<int:id2>")
 def dijakstra(id1, id2):
     from dijkstra import dijkstra
     # Check those ids exist
@@ -176,7 +176,7 @@ def dijakstra(id1, id2):
         # return {'error': 400, 'TF1': (id1 in locations), 'TF2': (id2 in locations), 'loc': locations}
         return Response('{"error": "Bike stations not found"}', status=404, mimetype='application/json')
 
-@app.route("/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
+@app.route("/api/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
 def complete_route(lat1, lon1, lat2, lon2):
     closest_1 = closest(lat1, lon1)[0][0]
     closest_2 = closest(lat2, lon2)[0][0]
