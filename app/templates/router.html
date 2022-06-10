@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pl">
     <head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+            integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+            crossorigin=""
+        />
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
@@ -32,7 +36,7 @@
                 <!-- Item break -->
 
                 
-                {% for event in route %}
+                {% for event in route['route_full'] %}
                     {% if event.type == 'journey' %}
                         <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
                         <div class='journey'>
@@ -65,14 +69,30 @@
                     <h3>Koniec</h3>
                 </div>
                 <!-- Item break -->
-                <div></div> <!-- Dummy to fill the grid -->
-                <div class='summary'>
-                    <h3>Razem (na rowerze): {{ (total_time / 60).__format__('.0f') }} minut</h3>
-                </div>
+
+            </div>
+            <div class='summary'>
+                <h3>Razem (na rowerze): {{ (route['total_time'] / 60).__format__('.0f') }} minut</h3>
+                <h3><a href="{{ route['google_maps'] }}">Link do trasy w  Google maps</a></h3>
             </div>
         </div>
 
-        <div id="map"> tu będzie mapa</div>
-        <script></script>
+        <div id="map"></div>
+        <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+            integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+            crossorigin="">
+        </script>
+        
+        <script>
+            var map = L.map('map').setView([52.22, 21.00], 13);
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'pk.eyJ1IjoicGF3ZWwxMTE2NTc0IiwiYSI6ImNsM2Fydmh5dTA0ZHczYnA0c3lseWlyZmEifQ.gKQTMlWndPolQFJM1lvgUQ'
+            }).addTo(map);
+        </script>
     </body>
 </html>

@@ -90,6 +90,16 @@ def closest(lat1, lon1):
     all_distances.sort(key=lambda tup: tup[1])
     return all_distances
 
+def google_maps_url(route):
+    waypoints = []
+    for event in route:
+        if event['type'] == 'journey':
+            continue
+        waypoints.append(str(event['lat']) + ',' + str(event['lon']))
+        
+    url = 'https://www.google.com/maps/dir/?api=1&origin=' + waypoints[0] + '&destination=' + waypoints[-1] + '&waypoints=' + ''.join(waypoints[1:-1])
+    return url
+
 
 ### Endpoints
 
@@ -182,8 +192,9 @@ def complete_route(lat1, lon1, lat2, lon2):
     closest_2 = closest(lat2, lon2)[0][0]
 
     route = dijakstra(closest_1, closest_2)
+    gmaps = google_maps_url(route['route_full'])
 
-    return route
+    return {**route, 'google_maps': gmaps}
 
 
 ### Views
@@ -199,7 +210,10 @@ def route_view(lat1, lon1, lat2, lon2):
     dist2 = closest2[1]
 
     route = dijakstra(id1, id2)
-    return render_template('router.html', route=route['route_full'], walking=[dist1, dist2], total_time=route['total_time'])
+    gmaps = google_maps_url(route['route_full'])
+
+    route = {**route, 'google_maps': gmaps}
+    return render_template('router.html', route=route, walking=[dist1, dist2])
 
 if __name__ == "__main__":
     app.run(host='localhost', port=80, debug=True)
