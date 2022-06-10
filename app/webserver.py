@@ -199,7 +199,7 @@ def route_view(lat1, lon1, lat2, lon2):
     dist2 = closest2[1]
 
     route = dijakstra(id1, id2)
-    return render_template('router.html', route=route['route_full'], walking=[dist1, dist2])
+    return render_template('router.html', route=route['route_full'], walking=[dist1, dist2], total_time=route['total_time'])
 
 if __name__ == "__main__":
     app.run(host='localhost', port=80, debug=True)

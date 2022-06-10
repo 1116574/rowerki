@@ -9,6 +9,7 @@ body {
     grid-column-gap: 0px;
     grid-row-gap: 0px; 
 }
+
 #map {
     height: 100%;
     grid-area: 1 / 2 / 2 / 4;
@@ -19,19 +20,43 @@ body {
     grid-area: 1 / 1 / 2 / 2;
 }
 
-#list {
-    list-style: inside none;
+#route {
     display: grid;
     grid-template-columns: min-content auto;
-    grid-template-rows: 24px;
+    grid-template-rows: 2em;
+}
+
+.italic {
+    font-style: italic;
+}
+
+div.journey {
+    display: flex;
+}
+
+div.journey img {
+    height: 2em;
+}
+
+div.journey > h5 {
+    margin-left: 1em;
+}
+h5, h3 {
+    margin: 0;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 
-div.journey {
+img.travel-icon {
+    height: 2.5em;
+}
+
+/* div.journey {
     font-weight: bold;
     font-size: small;
     color: #7B61FF
-}
+} */
 
 /* li.station {
     list-style: url('thru-circle.svg');

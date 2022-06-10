@@ -9,29 +9,70 @@
     <body>
         <div id="controls">
             <h1>Vetu-Router</h1>
-            <h2>Do 20 minut za darmo!</h2>
-            <div class='station'>
-                <h3>Początek</h3>
+            <h2 class="italic">Do 20 minut za darmo!</h2>
+            <div id="route">
+                <!-- Route start -->
+
+                <img class="travel-icon" src="{{ url_for('static', filename='start-frame.svg') }}" alt='ikona początku podróży'>
+                <div class='station'>
+                    <h3>Początek</h3>
+                </div>
+                <!-- Item break -->
+
+                <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
+                <div class='journey'>
+                    <img src='{{ url_for('static', filename='walk.svg') }}' alt='piechota'> <!-- TODO: translations -->
+                    {# Doing calc in view is bad buuuut its soo simple #}
+                    {# Assume speed of 6km/h for walking #}
+                    <h5>
+                        {{ (walking[0] * 1000).__format__('.0f') }} metrów
+                    </h5>
+                    {# This displays 3 decimal points, eg. 2.34234 -> 2.342 #}
+                </div>
+                <!-- Item break -->
+
+                
+                {% for event in route %}
+                    {% if event.type == 'journey' %}
+                        <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
+                        <div class='journey'>
+                            <img src='{{ url_for('static', filename='bike.svg') }}' alt='rower'> <!-- TODO: translations -->
+                            <h5>
+                                {{ (event.duration // 60).__format__('.0f') }} minut {{ (event.duration % 60 // 1).__format__('.0f') }} sekund
+                            </h5>
+                        </div>
+                    {% else %}
+                        <img class="travel-icon" src="{{ url_for('static', filename='circle-frame.svg') }}" alt='ikona stacji na trasie'>
+                        <div class='station'>
+                            <h3>{{ event.name }}</h3>
+                            <h5>{{ event.short_name }}</h5>
+                        </div>
+                    {% endif %}
+                <!-- Item break -->
+                {% endfor %}
+
+                <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
+                <div class='journey'>
+                    <img src="{{ url_for('static', filename='walk.svg') }}" alt='piechota'> <!-- TODO: translations -->
+                    <h5>
+                        {{ (walking[1] * 1000).__format__('.0f') }} metrów
+                    </h5>
+                </div>
+                <!-- Item break -->
+
+                <img class="travel-icon" src="{{ url_for('static', filename='end-frame.svg') }}" alt='ikona końca trasy'>
+                <div class='station'>
+                    <h3>Koniec</h3>
+                </div>
+                <!-- Item break -->
+                <div></div> <!-- Dummy to fill the grid -->
+                <div class='summary'>
+                    <h3>Razem (na rowerze): {{ (total_time / 60).__format__('.0f') }} minut</h3>
+                </div>
             </div>
-            <div class='journey'>
-                {{ walking[0] }}
-            </div>
-            
-            {% for event in route %}
-                {% if event.type == 'journey' %}
-                    <div class='journey'>
-                        {{ event.duration // 60 }} minut {{ event.duration % 60 // 1}} sekund
-                    </div>
-                {% else %}
-                    <div class='station'>
-                        <img src='{{ url_for('static', filename='bike.svg') }}' alt='rower'> <!-- TODO: translations -->
-                        <h3>{{ event.name }}</h3>
-                        <h5>{{ event.shortname }}</h5>
-                    </div>
-                {% endif %}
-            {% endfor %}
         </div>
 
-        <div id="map"></div>
+        <div id="map"> tu będzie mapa</div>
+        <script></script>
     </body>
 </html>
