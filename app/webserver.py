@@ -215,6 +215,10 @@ def route_view(lat1, lon1, lat2, lon2):
     route = {**route, 'google_maps': gmaps}
     return render_template('router.html', route=route, walking=[dist1, dist2])
 
+@app.route("/")
+def main():
+    return render_template('start-end.html')
+
 if __name__ == "__main__":
     app.run(host='localhost', port=80, debug=True)
 

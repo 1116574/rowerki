@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Wyszukaj trase{% endblock %}
+
+{% block content %}    
+    <div class='pane' id='start'><h3>Wybierz punkt startowy</h3> <img src={{ url_for('static', filename='arrow-forward.svg') }} alt="Strzałka w prawo"></div>
+    <div class='pane' id='finish'><h3>Wybierz punkt końcowy</h3> <img src={{ url_for('static', filename='arrow-forward.svg') }} alt="Strzałka w prawo"></div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+    document.getElementById('start').classList.add('selected')
+
+    function onMapClick(e) {
+        var marker = L.marker(e.latlng).addTo(map);
+        // alert("You clicked the map at " + e.latlng);
+        document.getElementById('start').innerHTML = e.latlng;
+        document.getElementById('start').classList.remove('selected')
+        document.getElementById('finish').classList.add('selected')
+    }
+
+    map.on('click', onMapClick);
+</script>
+{% endblock %}

@@ -1,6 +1,6 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
-    height: 95vh;
+    height: 97vh;
     display: grid;
     font-size: larg;
 
@@ -19,6 +19,26 @@ body {
 #controls {
     grid-area: 1 / 1 / 2 / 2;
 }
+
+@media screen and (max-width: 600px) {
+    body {
+        height: auto;
+        grid-template-columns: 1fr;
+        grid-template-rows: min-content minmax(50vh, 60vh);
+        grid-row-gap: 1em;
+        grid-column-gap: 0;
+    }
+
+    #map {
+        grid-area: 2 / 1 / 3 / 1;
+    }
+
+    #controls {
+        grid-area: 1 / 1 / 1 / 1;
+    }
+}
+    
+
 
 #route {
     display: grid;
@@ -52,16 +72,17 @@ img.travel-icon {
     height: 2.5em;
 }
 
-/* div.journey {
-    font-weight: bold;
-    font-size: small;
-    color: #7B61FF
-} */
-
-/* li.station {
-    list-style: url('thru-circle.svg');
+/* For start-end screen only */
+.pane {
+    display: flex;
+    justify-content: space-between;
+    height: 3em;
+    padding: 1em;
+    margin: 1em;
+    border-radius: 1em;
+    border: 0.4em solid aquamarine;
 }
 
-li.journey {
-    list-style: url('thru-line.svg');
-} */
+.selected {
+    background-color: aquamarine;
+}
