@@ -100,6 +100,25 @@ def google_maps_url(route):
     url = 'https://www.google.com/maps/dir/?api=1&travelmode=bicycling&origin=' + waypoints[0] + '&destination=' + waypoints[-1] + '&waypoints=' + '|'.join(waypoints[1:-1])
     return url
 
+def route(lat1, lon1, lat2, lon2):
+    closest1 = closest(lat1, lon1)[0]
+    id1 = closest1[0]
+    dist1 = closest1[1]
+
+    closest2 = closest(lat2, lon2)[0]
+    id2 = closest2[0]
+    dist2 = closest2[1]
+
+    route = dijakstra(id1, id2)
+    gmaps = google_maps_url(route['route_full'])
+
+    route['route_full'].insert(0, {'type': 'walk', 'distance': dist1})  # something about inserting at the beginning being bad for perf
+    route['route_full'].insert(0, {'type': 'origin', 'lat': lat1, 'lon': lon1})
+    
+    route['route_full'].append({'type': 'walk', 'distance': dist2})
+    route['route_full'].append({'type': 'destination', 'lat': lat2, 'lon': lon2})
+    route = {**route, 'google_maps': gmaps}
+    return route
 
 ### Endpoints
 
@@ -187,39 +206,24 @@ def dijakstra(id1, id2):
         return Response('{"error": "Bike stations not found"}', status=404, mimetype='application/json')
 
 @app.route("/api/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
-def complete_route(lat1, lon1, lat2, lon2):
-    closest_1 = closest(lat1, lon1)[0][0]
-    closest_2 = closest(lat2, lon2)[0][0]
-
-    route = dijakstra(closest_1, closest_2)
-    gmaps = google_maps_url(route['route_full'])
-
-    return {**route, 'google_maps': gmaps}
+def api_route(lat1, lon1, lat2, lon2):
+    result = route(lat1, lon1, lat2, lon2)
+    return result
 
 
 ### Views
 
 @app.route("/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
 def route_view(lat1, lon1, lat2, lon2):
-    closest1 = closest(lat1, lon1)[0]
-    id1 = closest1[0]
-    dist1 = closest1[1]
-
-    closest2 = closest(lat2, lon2)[0]
-    id2 = closest2[0]
-    dist2 = closest2[1]
-
-    route = dijakstra(id1, id2)
-    gmaps = google_maps_url(route['route_full'])
-
-    route = {**route, 'google_maps': gmaps}
-    return render_template('router.html', route=route, walking=[dist1, dist2])
+    result = route(lat1, lon1, lat2, lon2)
+    dist1, dist2 = result['route_full'][1]['distance'], result['route_full'][-2]['distance']  # TODO: fix view. This is a temp fix
+    return render_template('router.html', route=result, walking=[dist1, dist2])
 
 @app.route("/")
 def main():
     return render_template('start-end.html')
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=80, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
 
 

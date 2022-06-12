@@ -12,9 +12,18 @@
     </head>
     <body>
         <div id="controls">
-            <h1>Vetu-Router</h1>
+            <header>
+                <h1>Vetu-Router</h1>
+                <nav>
+                    <ul>
+                        <li><a href="">Instrukcja</a></li>
+                        <li><a href="">Dlaczego?</a></li>
+                    </ul>
+                </nav>
+            </header>
             <h2 class="italic">Do 20 minut za darmo!</h2>
-            
+            <hr>
+            {% block subtitle %}{% endblock %}
             {% block content %}{% endblock %}
 
         </div>

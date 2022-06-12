@@ -2,6 +2,15 @@
 
 {% block title %}Router{% endblock %}
 
+{% block subtitle %}
+Uwaga: Czas jest liczony na podstawie prawdziwej nawigacji, proste linie to tylko ograniczenie wizualne. 
+Czasy są liczone na prawdziwych drogach, poprostu tutaj tego nie widać. 
+Czas może się lekko różnić od gmaps - oni nie doliczają czasu na zmianę stacji ;) 
+My zakładamy około 2 minuty na stację.
+Dojście piechotą do pierwszej i od ostatniej stacji do punktu początkowego/końcowego nie jest liczone ani dodawane do linku gmaps.
+<hr>
+{% endblock %}
+
 {% block content %}
     <div id="route">
         <!-- Route start -->
@@ -10,23 +19,22 @@
         <div class='station'>
             <h3>Początek</h3>
         </div>
-        <!-- Item break -->
-
-        <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
-        <div class='journey'>
-            <img src='{{ url_for('static', filename='walk.svg') }}' alt='piechota'> <!-- TODO: translations -->
-            {# Doing calc in view is bad buuuut its soo simple #}
-            {# Assume speed of 6km/h for walking #}
-            <h5>
-                {{ (walking[0] * 1000).__format__('.0f') }} metrów
-            </h5>
-            {# This displays 3 decimal points, eg. 2.34234 -> 2.342 #}
-        </div>
+        
         <!-- Item break -->
 
         
         {% for event in route['route_full'] %}
-            {% if event.type == 'journey' %}
+            {% if event.type == 'walk' %}
+                <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
+                <div class='journey'>
+                    <img src='{{ url_for('static', filename='walk.svg') }}' alt='piechota'> <!-- TODO: translations -->
+                    {# Doing calc in view is bad buuuut its soo simple #}
+                    <h5>
+                        {{ (event.distance * 1000).__format__('.0f') }} metrów
+                    </h5>
+                    {# This displays 3 decimal points, eg. 2.34234 -> 2.342 #}
+                </div>
+            {% elif event.type == 'journey' %}
                 <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
                 <div class='journey'>
                     <img src='{{ url_for('static', filename='bike.svg') }}' alt='rower'> <!-- TODO: translations -->
@@ -34,7 +42,7 @@
                         {{ (event.duration // 60).__format__('.0f') }} minut {{ (event.duration % 60 // 1).__format__('.0f') }} sekund
                     </h5>
                 </div>
-            {% else %}
+            {% elif event.type == 'station' %}
                 <img class="travel-icon" src="{{ url_for('static', filename='circle-frame.svg') }}" alt='ikona stacji na trasie'>
                 <div class='station'>
                     <h3>{{ event.name }}</h3>
@@ -44,14 +52,6 @@
         <!-- Item break -->
         {% endfor %}
 
-        <img class="travel-icon" src="{{ url_for('static', filename='line-frame.svg') }}" alt='ikona podróży'>
-        <div class='journey'>
-            <img src="{{ url_for('static', filename='walk.svg') }}" alt='piechota'> <!-- TODO: translations -->
-            <h5>
-                {{ (walking[1] * 1000).__format__('.0f') }} metrów
-            </h5>
-        </div>
-        <!-- Item break -->
 
         <img class="travel-icon" src="{{ url_for('static', filename='end-frame.svg') }}" alt='ikona końca trasy'>
         <div class='station'>
@@ -63,7 +63,6 @@
     <div class='summary'>
         <h3>Razem (na rowerze): {{ (route['total_time'] / 60).__format__('.0f') }} minut</h3>
         <h3><a href="{{ route['google_maps'] }}">Link do trasy w  Google maps</a></h3>
-        <h5>Uwaga: Czas jest liczony na podstawie prawdziwej nawigacji, proste linie to tylko ograniczenie wizualne. Czasy są liczone na prawdziwych drogach, poprostu tutaj tego nie widać. Czas może się lekko różnić od gmaps - oni nie doliczają czasu na zmianę stacji ;) My zakładamy około 2 minuty na stację</h5>
     </div>
 {% endblock %}
 
@@ -81,16 +80,37 @@
             var marker = L.marker([event.lat, event.lon]);
             marker.bindPopup(event.name);
             marker.addTo(map);
+        } else if (event.type == 'origin' || event.type == 'destination') {
+            var marker = L.marker([event.lat, event.lon]);
+            marker.bindPopup(event.name);
+            marker.addTo(map);
         }
-    }
 
-    var polyline = new L.Polyline(point_list, {
-        color: 'red',
+    }
+length 
+    var starting_polyline = new L.Polyline([route['route_full'][0], route['route_full'][2]], {
+        color: '#61A0FF',
         weight: 3,
         opacity: 0.5,
         smoothFactor: 1
+    }).addTo(map);
+
+    var polyline = new L.Polyline(point_list, {
+        color: '#7B61FF',
+        weight: 3,
+        opacity: 0.9,
+        smoothFactor: 1
     });
     polyline.addTo(map);
+
+    var len = route['route_full'].length;
+    var end_point_list = [ route['route_full'][len-1], route['route_full'][len-3] ]
+    var ending_polyline = new L.Polyline(end_point_list, {
+        color: '#61A0FF',
+        weight: 3,
+        opacity: 0.5,
+        smoothFactor: 1
+    }).addTo(map);
 
 </script>
 {% endblock %}

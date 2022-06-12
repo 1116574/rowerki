@@ -2,13 +2,23 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     height: 97vh;
     display: grid;
-    font-size: larg;
+    /* font-size: large; */
 
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 0px; 
 }
+
+header, nav, nav>ul {
+    display: flex;
+}
+
+nav>ul {
+    list-style: none;
+    padding: 0;
+}
+
 
 #map {
     height: 100%;
@@ -18,6 +28,7 @@ body {
 }
 #controls {
     grid-area: 1 / 1 / 2 / 2;
+    margin-right: 8px;  /* so <hr> is nice looking. 8px is simulating default body margin */
 }
 
 @media screen and (max-width: 600px) {

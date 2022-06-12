@@ -46,7 +46,8 @@
             // Create a button
             document.getElementById('button').addEventListener('click', function() {
                 console.log('aaaa');
-                window.location.href = 'http://localhost/route/' + start + '/' + finish;
+                window.location.href = window.location + 'route/' + start + '/' + finish;
+
             });
         } else if (status == Status.BUTTON) {
             // Reset if clicked on the map
