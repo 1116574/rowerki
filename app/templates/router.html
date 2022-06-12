@@ -63,5 +63,34 @@
     <div class='summary'>
         <h3>Razem (na rowerze): {{ (route['total_time'] / 60).__format__('.0f') }} minut</h3>
         <h3><a href="{{ route['google_maps'] }}">Link do trasy w  Google maps</a></h3>
+        <h5>Uwaga: Czas jest liczony na podstawie prawdziwej nawigacji, proste linie to tylko ograniczenie wizualne. Czasy są liczone na prawdziwych drogach, poprostu tutaj tego nie widać. Czas może się lekko różnić od gmaps - oni nie doliczają czasu na zmianę stacji ;) My zakładamy około 2 minuty na stację</h5>
     </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    var route = {{ route|safe }};  // this looks like a good practice
+
+    var point_list = []  // for polyline
+    
+    for (event in route['route_full']) {
+        event = route['route_full'][event];  // get me some pythonic behaviour
+        if (event.type == 'station') {
+            var point = new L.LatLng(event.lat, event.lon)
+            point_list.push(point);
+            var marker = L.marker([event.lat, event.lon]);
+            marker.bindPopup(event.name);
+            marker.addTo(map);
+        }
+    }
+
+    var polyline = new L.Polyline(point_list, {
+        color: 'red',
+        weight: 3,
+        opacity: 0.5,
+        smoothFactor: 1
+    });
+    polyline.addTo(map);
+
+</script>
 {% endblock %}
