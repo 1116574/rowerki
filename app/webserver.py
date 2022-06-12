@@ -223,6 +223,14 @@ def route_view(lat1, lon1, lat2, lon2):
 def main():
     return render_template('start-end.html')
 
+@app.route("/instrukcja")
+def instruction():
+    return render_template('instrukcja.html')
+
+@app.route("/dlaczego")
+def why():
+    return render_template('dlaczego.html')
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True)
 

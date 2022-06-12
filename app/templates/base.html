@@ -12,15 +12,14 @@
     </head>
     <body>
         <div id="controls">
-            <header>
-                <h1>Vetu-Router</h1>
-                <nav>
-                    <ul>
-                        <li><a href="">Instrukcja</a></li>
-                        <li><a href="">Dlaczego?</a></li>
-                    </ul>
-                </nav>
-            </header>
+            <nav>
+                <ul>
+                    <li><a href="/">Główna</a></li>
+                    <li><a href="{{ url_for('instruction') }}">Instrukcja</a></li>
+                    <li><a href="{{ url_for('why') }}">Dlaczego?</a></li>
+                </ul>
+            </nav>
+            <h1>Vetu-Router</h1>
             <h2 class="italic">Do 20 minut za darmo!</h2>
             <hr>
             {% block subtitle %}{% endblock %}

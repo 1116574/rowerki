@@ -10,11 +10,9 @@ body {
     grid-row-gap: 0px; 
 }
 
-header, nav, nav>ul {
-    display: flex;
-}
-
 nav>ul {
+    display: flex;
+    justify-content: space-between;
     list-style: none;
     padding: 0;
 }
