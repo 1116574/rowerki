@@ -81,8 +81,16 @@ img.travel-icon {
     margin: 1em;
     border-radius: 1em;
     border: 0.4em solid aquamarine;
+    color: silver;
+    fill: silver;
 }
 
 .selected {
     background-color: aquamarine;
+    color: black;
+    fill: black;
+}
+
+.selected#button {
+    cursor: pointer;
 }

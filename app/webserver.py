@@ -97,7 +97,7 @@ def google_maps_url(route):
             continue
         waypoints.append(str(event['lat']) + ',' + str(event['lon']))
         
-    url = 'https://www.google.com/maps/dir/?api=1&origin=' + waypoints[0] + '&destination=' + waypoints[-1] + '&waypoints=' + ''.join(waypoints[1:-1])
+    url = 'https://www.google.com/maps/dir/?api=1&travelmode=bicycling&origin=' + waypoints[0] + '&destination=' + waypoints[-1] + '&waypoints=' + '|'.join(waypoints[1:-1])
     return url
 
 

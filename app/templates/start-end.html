@@ -3,21 +3,57 @@
 {% block title %}Wyszukaj trase{% endblock %}
 
 {% block content %}    
-    <div class='pane' id='start'><h3>Wybierz punkt startowy</h3> <img src={{ url_for('static', filename='arrow-forward.svg') }} alt="Strzałka w prawo"></div>
-    <div class='pane' id='finish'><h3>Wybierz punkt końcowy</h3> <img src={{ url_for('static', filename='arrow-forward.svg') }} alt="Strzałka w prawo"></div>
+    <div class='pane' id='start'><h3>Wybierz punkt startowy na mapie</h3> <svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path d="M24 40 21.9 37.85 34.25 25.5H8V22.5H34.25L21.9 10.15L24 8L40 24Z"/></svg></div>
+    <div class='pane' id='finish'><h3>Wybierz punkt końcowy na mapie</h3> <svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path d="M24 40 21.9 37.85 34.25 25.5H8V22.5H34.25L21.9 10.15L24 8L40 24Z"/></svg></div>
+    <div class='pane' id='button'><h3>Wyznacz trase</h3> <svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path d="M24 40 21.9 37.85 34.25 25.5H8V22.5H34.25L21.9 10.15L24 8L40 24Z"/></svg></div>
+
 {% endblock %}
 
 
 {% block script %}
 <script>
+    var start = 0;
+    var finish = 0;
+
+    const Status = {
+        START: 1,
+        FINISH: 2,
+        BUTTON: 3,
+     };
+    var status = Status.START;
     document.getElementById('start').classList.add('selected')
 
     function onMapClick(e) {
-        var marker = L.marker(e.latlng).addTo(map);
-        // alert("You clicked the map at " + e.latlng);
-        document.getElementById('start').innerHTML = e.latlng;
-        document.getElementById('start').classList.remove('selected')
-        document.getElementById('finish').classList.add('selected')
+        // TODO: fix this mess with some disabled class or something (also just more declarative UI if possible)
+        if (status == Status.START) {
+            status = Status.FINISH;
+            var marker = L.marker(e.latlng).addTo(map);
+            start = e.latlng['lat'] + ',' + e.latlng['lng'];
+
+
+            document.getElementById('start').innerHTML = e.latlng;
+            document.getElementById('start').classList.remove('selected')
+            document.getElementById('finish').classList.add('selected')
+        } else if (status == Status.FINISH) {
+            status = Status.BUTTON;
+            var marker = L.marker(e.latlng).addTo(map);
+            finish = e.latlng['lat'] + ',' + e.latlng['lng'];
+
+            document.getElementById('finish').innerHTML = e.latlng;
+            document.getElementById('finish').classList.remove('selected')
+            document.getElementById('button').classList.add('selected')
+
+            // Create a button
+            document.getElementById('button').addEventListener('click', function() {
+                console.log('aaaa');
+                window.location.href = 'http://localhost/route/' + start + '/' + finish;
+            });
+        } else if (status == Status.BUTTON) {
+            // Reset if clicked on the map
+            status = Status.START;
+            document.getElementById('button').classList.remove('selected')
+            document.getElementById('start').classList.add('selected')
+        }
     }
 
     map.on('click', onMapClick);
