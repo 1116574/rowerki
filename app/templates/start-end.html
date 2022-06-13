@@ -59,4 +59,18 @@
 
     map.on('click', onMapClick);
 </script>
+
+{# For displaying all available stations #}
+<script>
+    var stations = {{ stations|safe }}
+
+    for (st in stations) {
+        var st = stations[st];
+        var latlng = new L.LatLng(st.lat, st.lon)
+        var marker = L.circle(latlng)
+        //.bindPopup(st.name + '<br>' + '<input content="afadf" type="button" onClick="onMapClick()"></input>')
+        .addTo(map);
+    }
+</script>
+
 {% endblock %}

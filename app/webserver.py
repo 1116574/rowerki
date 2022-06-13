@@ -1,5 +1,5 @@
-from fileinput import close
 import json
+from pathlib import Path
 
 from flask import Flask, jsonify, render_template
 import sqlite3
@@ -10,7 +10,7 @@ from dijkstra import dijkstra
 
 app = Flask(__name__)
 
-DATABASE = 'app/data/bike_matrix.db'
+DATABASE = Path(__file__).parent / 'data' / 'bike_matrix.db'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -27,14 +27,14 @@ def close_connection(exception):
 def get_locations():
     gps = getattr(g, '_gps', None)
     if gps is None:
-        with open('app/data/gps.json', 'r') as f:
+        with open(Path(__file__).parent / 'data' / 'gps.json', 'r') as f:
             gps = g._gps = json.load(f)
     return gps
 
 def get_station_names():
     station_names = getattr(g, '_station_names', None)
     if station_names is None:
-        with open('app/data/station_names.json', 'r') as f:
+        with open(Path(__file__).parent / 'data' / 'station_names.json', 'r') as f:
             station_names = g._station_names = json.load(f)
     return station_names
 
@@ -42,10 +42,10 @@ def get_graph():
     graph = getattr(g, '_graph', None)
     if graph is None:
         from dijkstra import create_graph
-        with open('app/data/stations.json', 'r') as f:
+        with open(Path(__file__).parent / 'data' / 'stations.json', 'r') as f:
             stations = json.load(f)
 
-        with open('app/data/resp.json', 'r') as f:
+        with open(Path(__file__).parent / 'data' / 'resp.json', 'r') as f:
             durations = json.load(f)['durations']
 
         # graph = {"node1": {"node2": weight, ...}, ...}
@@ -110,6 +110,8 @@ def route(lat1, lon1, lat2, lon2):
     dist2 = closest2[1]
 
     route = dijakstra(id1, id2)
+    if 'error' in route:
+        return route
     gmaps = google_maps_url(route['route_full'])
 
     route['route_full'].insert(0, {'type': 'walk', 'distance': dist1})  # something about inserting at the beginning being bad for perf
@@ -120,7 +122,7 @@ def route(lat1, lon1, lat2, lon2):
     route = {**route, 'google_maps': gmaps}
     return route
 
-### Endpoints
+### API endpoints
 
 @app.route("/test")
 def hello_world():
@@ -159,7 +161,7 @@ def dijakstra(id1, id2):
 
         route = dijkstra(graph, str(id1), str(id2))
         if route is None:
-            return Response('{"error": "No route found"}', status=404, mimetype='application/json')
+            return {"error": "No route found"}
 
         time = 0
         route_full = []
@@ -208,6 +210,8 @@ def dijakstra(id1, id2):
 @app.route("/api/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
 def api_route(lat1, lon1, lat2, lon2):
     result = route(lat1, lon1, lat2, lon2)
+    if 'error' in result:
+        return Response(result, status=404, mimetype='application/json')
     return result
 
 
@@ -216,12 +220,17 @@ def api_route(lat1, lon1, lat2, lon2):
 @app.route("/route/<float:lat1>,<float:lon1>/<float:lat2>,<float:lon2>")
 def route_view(lat1, lon1, lat2, lon2):
     result = route(lat1, lon1, lat2, lon2)
+    if 'error' in result:
+        return render_template('no_route.html')
     dist1, dist2 = result['route_full'][1]['distance'], result['route_full'][-2]['distance']  # TODO: fix view. This is a temp fix
     return render_template('router.html', route=result, walking=[dist1, dist2])
 
 @app.route("/")
 def main():
-    return render_template('start-end.html')
+    stations = get_station_names()
+    stations = str(stations)
+    stations = stations.replace('False', 'false').replace('True', 'true')
+    return render_template('start-end.html', stations=stations)
 
 @app.route("/instrukcja")
 def instruction():
