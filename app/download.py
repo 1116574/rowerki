@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import requests
 
 systems = [
@@ -13,23 +14,23 @@ systems = [
 # This file downloads, splits, and preporccesses data from nextbike
 
 # Max distance (in km) between two stations (optimization for routing)
-KM_THRESHOLD = 10
+KM_THRESHOLD = 6.7  # 20 km/h * 0.33h(20min) = 6.7 km
 
 stations = []
-if not os.path.exists('app/data/stations.json'):
+if not os.path.exists(Path(__file__).parent / 'data' / 'stations.json'):
     for system in systems:
         print(f'Downloading {system}...')
         _system = requests.get(f'https://gbfs.nextbike.net/maps/gbfs/v2/{system}/pl/station_information.json').json()
         stations += _system['data']['stations']
     
-    with open('app/data/stations.json', 'w') as f:
+    with open(Path(__file__).parent / 'data' / 'stations.json', 'w') as f:
         json.dump(stations, f, indent=2)
 
 else:
-    with open('app/data/stations.json', 'r') as f:
+    with open(Path(__file__).parent / 'data' / 'stations.json', 'r') as f:
         stations = json.load(f)
 
-with open('app/static/stations.js', 'w') as f:
+with open(Path(__file__).parent / 'data' / 'stations.js', 'w') as f:
     file = json.dumps(stations, indent=2)
     file = 'const stations = ' + file
     f.write(file)
@@ -81,13 +82,13 @@ for station in stations:
 
     optimized_matrix.append({'id': id, 'close': close})
 
-with open('app/data/matrix.json', 'w') as f:
+with open(Path(__file__).parent / 'data' / 'matrix.json', 'w') as f:
     json.dump(optimized_matrix, f, indent=2)
 
-with open('app/data/gps.json', 'w') as f:
+with open(Path(__file__).parent / 'data' / 'gps.json', 'w') as f:
     json.dump(latlon, f, indent=2)
 
-with open('app/static/gps.js', 'w') as f:
+with open(Path(__file__).parent / 'data' / 'gps.js', 'w') as f:
     file = json.dumps(latlon, indent=2)
     file = 'const gps = ' + file
     f.write(file)

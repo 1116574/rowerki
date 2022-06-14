@@ -1,14 +1,15 @@
 import json
 import sqlite3
+from pathlib import Path
 
 
-con = sqlite3.connect('data/bike_matrix.db')
+con = sqlite3.connect(Path(__file__).parent / 'data' / 'bike_matrix.db')
 cur = con.cursor()
 
-with open('data/stations.json', 'r') as f:
+with open(Path(__file__).parent / 'data' / 'stations.json', 'r') as f:
     stations = json.load(f)
 
-with open('data/resp.json', 'r') as f:
+with open(Path(__file__).parent / 'data' / 'resp.json', 'r') as f:
     table = json.load(f)
 
 # Duration matrix

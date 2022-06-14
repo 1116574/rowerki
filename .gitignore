@@ -1,5 +1,6 @@
 old/
 data/
+data*/
 tilescache/
 __pycache__/
 *.pyc
